@@ -11,11 +11,13 @@ pub trait ICounter<TContractState>{
 #[starknet::contract]
 pub mod Counter{
 
-    use starknet::storage::StoragePointerWriteAccess;
-    use starknet::storage::StoragePointerReadAccess;
+    use starknet::storage::{StoragePointerWriteAccess, StoragePointerReadAccess};
+    use starknet:: {ContractAddress, get_caller_address};
+
     #[storage]
     struct Storage{
-        counter: u32
+        counter: u32,
+        owner: ContractAddress
     }
 
     #[event]
@@ -28,7 +30,7 @@ pub mod Counter{
 
     #[derive(Drop, starknet::Event)]
     struct CounterIncreased{
-        counter: u32
+        counter: u32,
     }
 
     #[derive(Drop, starknet::Event)]
@@ -37,8 +39,9 @@ pub mod Counter{
     }
 
     #[constructor]
-    fn constructor(ref self: ContractState, initial_counter: u32) {
+    fn constructor(ref self: ContractState, initial_counter: u32, owner: ContractAddress) {
         self.counter.write(initial_counter);
+        self.owner.write(owner);
     }
 
     #[abi(embed_v0)]
@@ -64,7 +67,10 @@ pub mod Counter{
         }
 
         fn reset_counter(ref self: ContractState){
+            let caller = get_caller_address();
             self.counter.write(0);
         }
+
+
     }
 }
