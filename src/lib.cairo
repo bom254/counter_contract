@@ -13,4 +13,22 @@ pub mod Counter{
     struct Storage{
         counter: u32
     }
+
+    #[event]
+    // Drops means ones it goes out of scope it gets destroyed
+    #[derive(Drop, starknet::Event)]
+    enum Event{
+        CounterIncreased: CounterIncreased,
+        CounterDecreased: CounterDecreased,
+    }
+
+    #[derive(Drop, starknet::Event)]
+    struct CounterIncreased{
+        counter: u32
+    }
+
+    #[derive(Drop, starknet::Event)]
+    struct CounterDecreased{
+        counter: u32
+    }
 }
